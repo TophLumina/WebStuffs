@@ -1,6 +1,7 @@
 const apikey = "6b3e3f0df014da0075645a7d";
 const source = "AUD";
-const target = ["CNY", "USD", "HKD", "NZD", "JPY", "EUR", "CAD", "GBP", "SGD", "MYR", "TWD", "INR"];
+// const target = ["CNY", "USD", "HKD", "NZD", "JPY", "EUR", "CAD", "GBP", "SGD", "MYR", "TWD", "INR"];
+const target = { "CNY": 1, "USD": 1, "HKD": 1, "NZD": 1, "JPY": 1, "EUR": 1, "CAD": 1, "GBP": 1, "SGD": 1, "MYR": 1, "TWD": 1, "INR": 1 };
 var rate_sheet;
 
 // 创建一个显示下一次查询时间的容器
@@ -119,10 +120,10 @@ function display(rateSheet) {
 
     // 遍历 rateSheet 并仅显示 target 中的货币
     for (const [cur, rate] of Object.entries(rateSheet)) {
-        if (target.includes(cur)) {
+        if (target[cur]) {
             const listItem = document.createElement("li");
             listItem.className = "rate-item"; // 添加类名
-            listItem.textContent = `${source} : ${cur} = ${rate} + 0.2`;
+            listItem.textContent = `${source} : ${cur} = ${rate + target[cur]}`;
             list.appendChild(listItem);
         }
     }
