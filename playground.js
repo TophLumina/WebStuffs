@@ -2,7 +2,7 @@ const apikey = "6b3e3f0df014da0075645a7d";
 const source = "AUD";
 const target_buffer_rate = { "CNY": 2, "USD": 2, "HKD": 1, "NZD": 1, "JPY": 1, "EUR": 1, "CAD": 1, "GBP": 1, "SGD": 1, "MYR": 1, "TWD": 1, "INR": 1 };
 const digits = 4;
-var rate_sheet;
+let rate_sheet = null;
 
 // 创建一个显示下一次查询时间的容器
 const nextQueryElement = document.createElement("div");
