@@ -122,7 +122,7 @@ function display(rateSheet) {
         if (target.includes(cur)) {
             const listItem = document.createElement("li");
             listItem.className = "rate-item"; // 添加类名
-            listItem.textContent = `${source} : ${cur} = ${rate} + 0.2`;
+            listItem.textContent = `${source} : ${cur} = ${rate}`;
             list.appendChild(listItem);
         }
     }
