@@ -121,6 +121,7 @@ function display(rateSheet) {
     for (const [cur, rate] of Object.entries(rateSheet)) {
         if (target.includes(cur)) {
             const listItem = document.createElement("li");
+            listItem.className = "rate-item"; // 添加类名
             listItem.textContent = `${source} : ${cur} = ${rate}`;
             list.appendChild(listItem);
         }

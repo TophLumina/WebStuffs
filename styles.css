@@ -25,6 +25,27 @@ h2 {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* 样式应用于每个汇率条目 */
+.rate-item {
+    padding: 10px;
+    margin: 5px 0;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1.1em;
+    color: #333;
+    transition: background 0.3s, transform 0.2s, color 0.3s;
+}
+
+/* 鼠标悬停时的样式 */
+.rate-item:hover {
+    background: #e0f7fa;
+    /* 浅蓝色背景 */
+    color: #00796b;
+    /* 深绿色字体 */
+    transform: scale(1.02);
+}
+
 /* 列表样式 */
 #rateSheetContainer ul {
     list-style: none;
@@ -50,4 +71,9 @@ h2 {
     margin-top: 20px;
     font-size: 1.1em;
     color: #555;
+    background: #fff3e0;
+    /* 浅橙色背景 */
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
