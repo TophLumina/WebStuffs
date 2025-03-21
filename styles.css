@@ -77,3 +77,41 @@ h2 {
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+/* 错误提示框样式 */
+.error-popup {
+    position: fixed;
+    /* 固定在页面上 */
+    top: 45%;
+    /* 距离页面顶部 0 */
+    left: 0;
+    /* 距离页面左侧 0 */
+    width: 100%;
+    /* 占据整个页面宽度 */
+    background-color: #f44336;
+    /* 红色背景 */
+    color: white;
+    /* 白色文字 */
+    padding: 20px 30px;
+    /* 增加内边距 */
+    text-align: center;
+    /* 文本居中 */
+    font-size: 1.5em;
+    /* 增大字体 */
+    z-index: 1000;
+    /* 确保在最上层 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* 添加更大的阴影 */
+    animation: slideDown 0.5s ease-in-out;
+    /* 添加滑动动画 */
+}
+
+/* 提示框的滑动动画 */
+@keyframes slideDown {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}

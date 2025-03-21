@@ -61,6 +61,10 @@ function getTimeUntilNextGMT2Midnight() {
 let nextQueryTime = null; // 用于存储下一次查询的时间
 
 function updateNextQueryTime() {
+    if (nextQueryTime) {
+        clearTimeout(nextQueryTime); // 清除之前的定时器
+    }
+
     const timeUntilNextQuery = getTimeUntilNextGMT2Midnight();
     nextQueryTime = new Date(Date.now() + timeUntilNextQuery);
     nextQueryElement.textContent = `Next query at: ${nextQueryTime.toLocaleString()}`;
@@ -95,10 +99,10 @@ function checkAndUpdateRateSheet() {
         }
     } else {
         // 如果日期不同，发起 fetch 请求更新数据
-        fetch("https://v6.exchangerate-api.com/v6/" + apikey + "/latest/" + source)
+        fetch(`https://v6.exchangerate-api.com/v6/${encodeURIComponent(apikey)}/latest/${encodeURIComponent(source)}`)
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error("ERROR::No Response.");
+                    throw new Error("Failed to fetch exchange rates.");
                 }
                 return response.json();
             })
@@ -114,6 +118,19 @@ function checkAndUpdateRateSheet() {
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);
+
+                // 创建一个提示框元素
+                const errorElement = document.createElement("div");
+                errorElement.className = "error-popup"; // 添加类名
+                errorElement.textContent = "CRITAL: Failed to fetch exchange rates. Exchange rate table expired. Please try again later.";
+
+                // 将提示框添加到页面
+                document.body.appendChild(errorElement);
+
+                //  10分钟后移除提示框
+                setTimeout(() => {
+                    errorElement.remove();
+                }, 600000);
             });
     }
 
@@ -130,19 +147,20 @@ function display(rateSheet) {
     // 清空当前的内容
     outputElement.innerHTML = "<h2>Exchange Rates</h2>";
     const list = document.createElement("ul");
+    const fragment = document.createDocumentFragment(); // 创建文档片段
 
     // 遍历 rateSheet 并仅显示 target 中的货币
     for (const [cur, rate] of Object.entries(rateSheet)) {
-        if (target_buffer_rate[cur]) {
+        if (target_buffer_rate[cur] !== undefined) {
             const listItem = document.createElement("li");
-            listItem.className = "rate-item"; // 添加类名
+            listItem.className = "rate-item";
             listItem.textContent = `${source} : ${cur} = ${(rate + target_buffer_rate[cur]).toFixed(digits)}`;
-            list.appendChild(listItem);
+            fragment.appendChild(listItem); // 添加到文档片段
         }
     }
 
-    // 将更新后的列表添加到 rateSheetContainer
-    outputElement.appendChild(list);
+    list.appendChild(fragment); // 一次性添加到列表
+    outputElement.appendChild(list); // 更新 HTML
 }
 
 // 初始检查并更新
