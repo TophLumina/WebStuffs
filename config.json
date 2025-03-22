@@ -1,8 +1,10 @@
 {
     "apikey": "88ca2fb954408f0240a369ad",
     "source": "AUD",
-    "USD_CNY_desc": "美元 / 人民币",
+    "SEPC_AUD_CNY_buffer_rate": 0.2,
+    "SEPC_AUD_CNY_desc": "澳元 / 人民币",
     "USD_CNY_buffer_rate": 0.2,
+    "USD_CNY_desc": "美元 / 人民币",
     "AUD_buffer_rates": {
         "CNY": 0.2,
         "USD": 0.2,
