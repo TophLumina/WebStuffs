@@ -4,6 +4,7 @@ let apikey = ""; // 动态加载的 API 密钥
 let source = ""; // 动态加载的基准货币
 let target_buffer_rate = {}; // 动态加载的缓冲汇率
 let rate_sheet = null; // 当前汇率表数据
+let countdownTimeoutId = null; // 用于跟踪倒计时的 ID
 
 // 创建并添加显示下一次查询时间的容器
 const nextQueryElement = document.createElement("div");
@@ -22,39 +23,39 @@ document.body.appendChild(outputElement);
  */
 function updateNextQuery(intervalMs = 10 * 60 * 1000) {
     const now = new Date();
-    const nextQueryTime = new Date(now.getTime() + intervalMs); // 设置下一次查询时间
+    const nextQueryTime = new Date(now.getTime() + intervalMs);
 
-    // 清空 nextQueryElement 的内容
-    nextQueryElement.textContent = "";
-
-    // 创建并添加 "Next query at" 元素
-    const nextQueryAtElement = document.createElement("span");
-    nextQueryAtElement.className = "next-query-at";
+    // 更新 "Next query at"
+    let nextQueryAtElement = document.querySelector(".next-query-at");
+    if (!nextQueryAtElement) {
+        nextQueryAtElement = document.createElement("span");
+        nextQueryAtElement.className = "next-query-at";
+        nextQueryElement.appendChild(nextQueryAtElement);
+    }
     nextQueryAtElement.textContent = `Next query at: ${nextQueryTime.toLocaleString()}`;
-    nextQueryElement.appendChild(nextQueryAtElement);
 
-    // 创建并添加 "Next query in" 元素
-    const nextQueryInElement = document.createElement("span");
-    nextQueryInElement.className = "next-query-in";
-    nextQueryElement.appendChild(nextQueryInElement);
+    // 更新 "Next query in"
+    let nextQueryInElement = document.querySelector(".next-query-in");
+    if (!nextQueryInElement) {
+        nextQueryInElement = document.createElement("span");
+        nextQueryInElement.className = "next-query-in";
+        nextQueryElement.appendChild(nextQueryInElement);
+    }
 
-    // 启动倒计时
     function updateCountdown() {
         const now = new Date();
-        const timeDiff = Math.max(0, nextQueryTime - now); // 计算剩余时间（毫秒）
+        const timeDiff = Math.max(0, nextQueryTime - now);
         const minutes = Math.floor(timeDiff / (1000 * 60));
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-        // 更新倒计时内容
         nextQueryInElement.textContent = `Next query in: ${minutes}m ${seconds}s`;
 
-        // 如果倒计时未结束，继续更新
         if (timeDiff > 0) {
-            setTimeout(updateCountdown, 1000); // 每秒更新一次
+            countdownTimeoutId = setTimeout(updateCountdown, 1000);
         }
     }
 
-    updateCountdown(); // 启动倒计时更新
+    updateCountdown();
 }
 
 /**
@@ -92,7 +93,7 @@ function checkAndUpdateRateSheet() {
     const now = Date.now(); // 当前时间的时间戳（毫秒）
 
     // 检查 localStorage 中是否有未过期的数据（10 分钟内有效）
-    if (lastUpdatedTimestamp && now - parseInt(lastUpdatedTimestamp, 10) < 10 * 60 * 1000) {
+    if (lastUpdatedTimestamp && !isNaN(parseInt(lastUpdatedTimestamp, 10)) && now - parseInt(lastUpdatedTimestamp, 10) < 10 * 60 * 1000) {
         const storedRateSheet = localStorage.getItem("rate_sheet");
         if (storedRateSheet) {
             rate_sheet = JSON.parse(storedRateSheet); // 从 localStorage 加载数据
@@ -196,9 +197,18 @@ function display(rateSheet) {
     outputElement.appendChild(table);
 }
 
+/**
+ * 定时检查并更新汇率表数据
+ */
+function scheduleNextCheck() {
+    checkAndUpdateRateSheet().then(() => {
+        setTimeout(scheduleNextCheck, 10 * 60 * 1000); // 每 10 分钟调用一次
+    });
+}
+
 // 确保配置加载完成后再执行查询
 loadConfig().then(() => {
     checkAndUpdateRateSheet();
-    setInterval(checkAndUpdateRateSheet, 10 * 60 * 1000); // 每 10 分钟更新一次
+    scheduleNextCheck(); // 启动定时器
 });
 
