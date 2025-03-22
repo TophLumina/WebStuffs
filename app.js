@@ -19,25 +19,47 @@ document.body.appendChild(outputElement);
 let nextQueryTime = null;
 
 /**
- * 更新下一次查询时间并显示在页面上
+ * 更新下一次查询时间并启动倒计时
+ * @param {number} intervalMs - 距离下一次查询的时间间隔（毫秒）
  */
-function updateNextQueryTime() {
+function updateNextQuery(intervalMs = 10 * 60 * 1000) {
     const now = new Date();
-    nextQueryTime = new Date(now.getTime() + 10 * 60 * 1000); // 当前时间加 10 分钟
-    nextQueryElement.textContent = `Next query at: ${nextQueryTime.toLocaleString()}`;
-}
+    nextQueryTime = new Date(now.getTime() + intervalMs); // 设置下一次查询时间
 
-/**
- * 每秒更新倒计时，显示距离下一次查询的剩余时间
- */
-function updateNextQueryCountdown() {
-    if (nextQueryTime) {
+    // 确保容器清空
+    nextQueryElement.textContent = "";
+
+    // 创建并添加 "Next query at" 元素
+    const nextQueryAtElement = document.createElement("span");
+    nextQueryAtElement.className = "next-query-at";
+    nextQueryAtElement.textContent = `Next query at: ${nextQueryTime.toLocaleString()}`;
+    nextQueryElement.appendChild(nextQueryAtElement);
+
+    // 添加换行符
+    nextQueryElement.appendChild(document.createElement("br"));
+
+    // 创建并添加 "Next query in" 元素
+    const nextQueryInElement = document.createElement("span");
+    nextQueryInElement.className = "next-query-in";
+    nextQueryElement.appendChild(nextQueryInElement);
+
+    // 启动倒计时
+    function updateCountdown() {
         const now = new Date();
         const timeDiff = Math.max(0, nextQueryTime - now); // 计算剩余时间（毫秒）
         const minutes = Math.floor(timeDiff / (1000 * 60));
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-        nextQueryElement.textContent = `Next query in: ${minutes}m ${seconds}s`;
+
+        // 更新倒计时内容
+        nextQueryInElement.textContent = `Next query in: ${minutes}m ${seconds}s`;
+
+        // 如果倒计时未结束，继续更新
+        if (timeDiff > 0) {
+            setTimeout(updateCountdown, 1000); // 每秒更新一次
+        }
     }
+
+    updateCountdown(); // 启动倒计时更新
 }
 
 /**
@@ -68,9 +90,24 @@ function loadConfig() {
 
 /**
  * 检查并更新汇率表数据
- * 从 API 获取最新汇率数据并更新页面
+ * 优先使用 localStorage 中的汇率数据（如果未过期），否则从 API 获取最新数据
  */
 function checkAndUpdateRateSheet() {
+    const lastUpdatedTimestamp = localStorage.getItem("rate_sheet_last_updated"); // 获取上次更新的时间戳
+    const now = Date.now(); // 当前时间的时间戳（毫秒）
+
+    // 检查 localStorage 中是否有未过期的数据（10 分钟内有效）
+    if (lastUpdatedTimestamp && now - parseInt(lastUpdatedTimestamp, 10) < 10 * 60 * 1000) {
+        const storedRateSheet = localStorage.getItem("rate_sheet");
+        if (storedRateSheet) {
+            rate_sheet = JSON.parse(storedRateSheet); // 从 localStorage 加载数据
+            console.log("Loaded rate_sheet from localStorage:", rate_sheet);
+            display(rate_sheet); // 更新页面显示
+            return; // 直接返回，不再调用 API
+        }
+    }
+
+    // 如果 localStorage 中没有有效数据，则从 API 获取最新数据
     fetch(`https://v6.exchangerate-api.com/v6/${encodeURIComponent(apikey)}/latest/${encodeURIComponent(source)}`)
         .then((response) => {
             if (!response.ok) {
@@ -83,9 +120,13 @@ function checkAndUpdateRateSheet() {
 
             // 保存到 localStorage
             localStorage.setItem("rate_sheet", JSON.stringify(rate_sheet));
+            localStorage.setItem("rate_sheet_last_updated", Date.now().toString()); // 保存当前时间戳
             console.log("Updated and saved to localStorage:", rate_sheet);
 
             display(rate_sheet); // 更新页面显示
+
+            // 在成功获取数据后更新下一次查询时间
+            updateNextQuery(10 * 60 * 1000); // 设置下一次查询时间为 10 分钟后
         })
         .catch((error) => {
             console.error("Error fetching data:", error);
@@ -102,8 +143,8 @@ function checkAndUpdateRateSheet() {
             }, 600000);
         });
 
-    // 更新下一次查询时间
-    updateNextQueryTime();
+    // 在成功获取数据后更新下一次查询时间
+    updateNextQuery(10 * 60 * 1000); // 设置下一次查询时间为 10 分钟后
 }
 
 /**
@@ -169,7 +210,4 @@ loadConfig().then(() => {
     checkAndUpdateRateSheet();
     setInterval(checkAndUpdateRateSheet, 10 * 60 * 1000); // 每 10 分钟更新一次
 });
-
-// 每秒更新倒计时
-setInterval(updateNextQueryCountdown, 1000);
 
