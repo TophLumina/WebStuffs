@@ -156,11 +156,11 @@ function display(rateSheet) {
     const headerRow = document.createElement("tr");
 
     const currencyHeader = document.createElement("th");
-    currencyHeader.textContent = "Currency";
+    currencyHeader.textContent = "汇率对";
     const lowerRateHeader = document.createElement("th");
-    lowerRateHeader.textContent = "Buying";
+    lowerRateHeader.textContent = "买入价";
     const upperRateHeader = document.createElement("th");
-    upperRateHeader.textContent = "Selling";
+    upperRateHeader.textContent = "卖出价";
 
     headerRow.appendChild(currencyHeader);
     headerRow.appendChild(lowerRateHeader);
