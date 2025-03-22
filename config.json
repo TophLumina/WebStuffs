@@ -1,0 +1,18 @@
+{
+    "apikey": "88ca2fb954408f0240a369ad",
+    "source": "AUD",
+    "buffer_rates": {
+        "CNY": 0.2,
+        "USD": 0.2,
+        "HKD": 0.2,
+        "NZD": 1,
+        "JPY": 1,
+        "EUR": 1,
+        "CAD": 1,
+        "GBP": 1,
+        "SGD": 1,
+        "MYR": 1,
+        "TWD": 1,
+        "INR": 1
+    }
+}
