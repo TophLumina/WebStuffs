@@ -151,18 +151,10 @@ function checkAndUpdateRateSheet() {
 }
 
 /**
- * 显示汇率表数据
+ * 显示特殊汇率表
  * @param {Object} rateSheet - 汇率表数据
  */
-function display(rateSheet) {
-    // 清空当前的内容
-    outputElement.innerHTML = "";
-
-    // 添加特殊汇率标题
-    const specialRatesHeader = document.createElement("h2");
-    specialRatesHeader.textContent = "特殊汇率";
-    outputElement.appendChild(specialRatesHeader);
-
+function displaySpecialRates(rateSheet) {
     // 创建特殊汇率表格
     const table_spec = document.createElement("table");
     table_spec.className = "rate-table spec-rate-table";
@@ -199,16 +191,16 @@ function display(rateSheet) {
         SPEC_AUD_CNY_row.appendChild(SPEC_AUD_CNY_sellingRateCell);
         tbody_spec.appendChild(SPEC_AUD_CNY_row);
     }
-    
 
     table_spec.appendChild(tbody_spec);
-    outputElement.appendChild(table_spec);
+    return table_spec;
+}
 
-    // 添加实时汇率标题
-    const realTimeRatesHeader = document.createElement("h2");
-    realTimeRatesHeader.textContent = "实时汇率";
-    outputElement.appendChild(realTimeRatesHeader);
-
+/**
+ * 显示实时汇率表
+ * @param {Object} rateSheet - 汇率表数据
+ */
+function displayRealTimeRates(rateSheet) {
     // 创建实时汇率表格
     const table = document.createElement("table");
     table.className = "rate-table regu-rate-table";
@@ -253,22 +245,51 @@ function display(rateSheet) {
         }
     }
 
-    // 添加USD / CNY的特殊行
-    const USD_CNY_rate = rateSheet["CNY"] / rateSheet["USD"];
-    const USD_CNY_row = document.createElement("tr");
-    const USD_CNY_currencyDesc = document.createElement("td");
-    USD_CNY_currencyDesc.textContent = USD_CNY_desc;
-    const USD_CNY_buyingRateCell = document.createElement("td");
-    USD_CNY_buyingRateCell.textContent = (USD_CNY_rate - USD_CNY_buffer_rate).toFixed(digits);
-    const USD_CNY_sellingRateCell = document.createElement("td");
-    USD_CNY_sellingRateCell.textContent = (USD_CNY_rate + USD_CNY_buffer_rate).toFixed(digits);
-    USD_CNY_row.appendChild(USD_CNY_currencyDesc);
-    USD_CNY_row.appendChild(USD_CNY_buyingRateCell);
-    USD_CNY_row.appendChild(USD_CNY_sellingRateCell);
-    tbody.appendChild(USD_CNY_row);
+    // 添加 USD / CNY 的特殊行
+    if (rateSheet["USD"] && rateSheet["CNY"]) {
+        const USD_CNY_rate = rateSheet["CNY"] / rateSheet["USD"];
+        const USD_CNY_row = document.createElement("tr");
+        const USD_CNY_currencyDesc = document.createElement("td");
+        USD_CNY_currencyDesc.textContent = USD_CNY_desc;
+        const USD_CNY_buyingRateCell = document.createElement("td");
+        USD_CNY_buyingRateCell.textContent = (USD_CNY_rate - USD_CNY_buffer_rate).toFixed(digits);
+        const USD_CNY_sellingRateCell = document.createElement("td");
+        USD_CNY_sellingRateCell.textContent = (USD_CNY_rate + USD_CNY_buffer_rate).toFixed(digits);
+        USD_CNY_row.appendChild(USD_CNY_currencyDesc);
+        USD_CNY_row.appendChild(USD_CNY_buyingRateCell);
+        USD_CNY_row.appendChild(USD_CNY_sellingRateCell);
+        tbody.appendChild(USD_CNY_row);
+    }
 
     table.appendChild(tbody);
-    outputElement.appendChild(table);
+    return table;
+}
+
+/**
+ * 显示各汇率表数据
+ * @param {Object} rateSheet - 汇率表数据
+ */
+function display(rateSheet) {
+    // 清空当前的内容
+    outputElement.innerHTML = "";
+
+    // 添加特殊汇率标题
+    const specialRatesHeader = document.createElement("h2");
+    specialRatesHeader.textContent = "特殊汇率";
+    outputElement.appendChild(specialRatesHeader);
+
+    // 显示特殊汇率表
+    const specialRatesTable = displaySpecialRates(rateSheet);
+    outputElement.appendChild(specialRatesTable);
+
+    // 添加实时汇率标题
+    const realTimeRatesHeader = document.createElement("h2");
+    realTimeRatesHeader.textContent = "实时汇率";
+    outputElement.appendChild(realTimeRatesHeader);
+
+    // 显示实时汇率表
+    const realTimeRatesTable = displayRealTimeRates(rateSheet);
+    outputElement.appendChild(realTimeRatesTable);
 }
 
 /**
