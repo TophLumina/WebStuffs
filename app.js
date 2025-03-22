@@ -1,29 +1,35 @@
-const apikey = "88ca2fb954408f0240a369ad";
-const source = "AUD";
-const digits = 4;
-let target_buffer_rate = {};
-let rate_sheet = null;
+// 全局变量定义
+const digits = 4; // 小数点保留位数
+let apikey = ""; // 动态加载的 API 密钥
+let source = ""; // 动态加载的基准货币
+let target_buffer_rate = {}; // 动态加载的缓冲汇率
+let rate_sheet = null; // 当前汇率表数据
 
-// 创建一个显示下一次查询时间的容器
+// 创建并添加显示下一次查询时间的容器
 const nextQueryElement = document.createElement("div");
 nextQueryElement.id = "nextQueryContainer";
 document.body.appendChild(nextQueryElement);
 
-// 获取 HTML 中的目标容器
+// 创建并添加显示汇率表的容器
 const outputElement = document.createElement("div");
 outputElement.id = "rateSheetContainer";
 document.body.appendChild(outputElement);
 
-// 更新下一次查询时间的显示
-let nextQueryTime = null; // 用于存储下一次查询的时间
+// 用于存储下一次查询时间
+let nextQueryTime = null;
 
+/**
+ * 更新下一次查询时间并显示在页面上
+ */
 function updateNextQueryTime() {
     const now = new Date();
     nextQueryTime = new Date(now.getTime() + 10 * 60 * 1000); // 当前时间加 10 分钟
     nextQueryElement.textContent = `Next query at: ${nextQueryTime.toLocaleString()}`;
 }
 
-// 每秒更新倒计时
+/**
+ * 每秒更新倒计时，显示距离下一次查询的剩余时间
+ */
 function updateNextQueryCountdown() {
     if (nextQueryTime) {
         const now = new Date();
@@ -34,27 +40,37 @@ function updateNextQueryCountdown() {
     }
 }
 
-// 从本地 JSON 文件加载 target_buffer_rate
-function loadTargetBufferRate() {
-    fetch(`target_buffer_rate.json?timestamp=${new Date().getTime()}`)
+/**
+ * 从本地 JSON 文件加载配置，包括 API 密钥、基准货币和缓冲汇率
+ * @returns {Promise<void>}
+ */
+function loadConfig() {
+    return fetch(`config.json?timestamp=${new Date().getTime()}`)
         .then((response) => {
             if (!response.ok) {
-                throw new Error("Failed to load target_buffer_rate.json");
+                throw new Error("Failed to load config.json");
             }
             return response.json();
         })
         .then((data) => {
-            target_buffer_rate = data;
+            apikey = data.apikey; // 动态加载 API 密钥
+            source = data.source; // 动态加载基准货币
+            target_buffer_rate = data.buffer_rates; // 动态加载缓冲汇率
+
             console.log("Loaded target_buffer_rate:", target_buffer_rate);
+            console.log("Loaded apikey:", apikey);
+            console.log("Loaded source:", source);
         })
         .catch((error) => {
-            console.error("Error loading target_buffer_rate:", error);
+            console.error("Error loading config:", error);
         });
 }
 
-// 检查并更新数据的函数
+/**
+ * 检查并更新汇率表数据
+ * 从 API 获取最新汇率数据并更新页面
+ */
 function checkAndUpdateRateSheet() {
-    // 发起 fetch 请求更新数据
     fetch(`https://v6.exchangerate-api.com/v6/${encodeURIComponent(apikey)}/latest/${encodeURIComponent(source)}`)
         .then((response) => {
             if (!response.ok) {
@@ -63,23 +79,21 @@ function checkAndUpdateRateSheet() {
             return response.json();
         })
         .then((data) => {
-            rate_sheet = data.conversion_rates;
+            rate_sheet = data.conversion_rates; // 更新汇率表数据
 
             // 保存到 localStorage
             localStorage.setItem("rate_sheet", JSON.stringify(rate_sheet));
             console.log("Updated and saved to localStorage:", rate_sheet);
 
-            display(rate_sheet); // 更新 HTML
+            display(rate_sheet); // 更新页面显示
         })
         .catch((error) => {
             console.error("Error fetching data:", error);
 
-            // 创建一个提示框元素
+            // 显示错误提示框
             const errorElement = document.createElement("div");
-            errorElement.className = "error-popup"; // 添加类名
+            errorElement.className = "error-popup";
             errorElement.textContent = "CRITICAL: Failed to fetch exchange rates. Please try again later.";
-
-            // 将提示框添加到页面
             document.body.appendChild(errorElement);
 
             // 10 分钟后移除提示框
@@ -92,7 +106,10 @@ function checkAndUpdateRateSheet() {
     updateNextQueryTime();
 }
 
-// 定义一个函数来将 rate_sheet 显示在 HTML 页面上
+/**
+ * 显示汇率表数据
+ * @param {Object} rateSheet - 汇率表数据
+ */
 function display(rateSheet) {
     // 清空当前的内容
     outputElement.innerHTML = "<h2>Exchange Rates</h2>";
@@ -121,48 +138,37 @@ function display(rateSheet) {
     // 创建表格主体
     const tbody = document.createElement("tbody");
 
-    // 遍历 rateSheet 并仅显示 target 中的货币
+    // 遍历汇率表数据并生成表格行
     for (const [cur, rate] of Object.entries(rateSheet)) {
         if (target_buffer_rate[cur] !== undefined) {
             const row = document.createElement("tr");
 
-            // 创建货币代码单元格
             const currencyCell = document.createElement("td");
             currencyCell.textContent = cur;
 
-            // 创建减去 buffer 的值单元格
             const lowerRateCell = document.createElement("td");
             lowerRateCell.textContent = (rate - target_buffer_rate[cur]).toFixed(digits);
 
-            // 创建加上 buffer 的值单元格
             const upperRateCell = document.createElement("td");
             upperRateCell.textContent = (rate + target_buffer_rate[cur]).toFixed(digits);
 
-            // 将单元格添加到行
             row.appendChild(currencyCell);
             row.appendChild(lowerRateCell);
             row.appendChild(upperRateCell);
 
-            // 将行添加到表格主体
             tbody.appendChild(row);
         }
     }
 
-    // 将表格主体添加到表格
     table.appendChild(tbody);
-
-    // 将表格添加到输出容器
     outputElement.appendChild(table);
 }
 
-// 初始加载 target_buffer_rate
-loadTargetBufferRate();
-
-// 初始检查并更新
-checkAndUpdateRateSheet();
-
-// 每 10 分钟更新一次（10 分钟 = 600,000 毫秒）
-setInterval(checkAndUpdateRateSheet, 10 * 60 * 1000);
+// 确保配置加载完成后再执行查询
+loadConfig().then(() => {
+    checkAndUpdateRateSheet();
+    setInterval(checkAndUpdateRateSheet, 10 * 60 * 1000); // 每 10 分钟更新一次
+});
 
 // 每秒更新倒计时
 setInterval(updateNextQueryCountdown, 1000);
