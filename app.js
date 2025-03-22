@@ -145,7 +145,7 @@ function checkAndUpdateRateSheet() {
  */
 function display(rateSheet) {
     // 清空当前的内容
-    outputElement.innerHTML = "<h2>Exchange Rates</h2>";
+    outputElement.innerHTML = "<h2>实时汇率</h2>";
 
     // 创建表格元素
     const table = document.createElement("table");
