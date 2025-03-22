@@ -154,7 +154,8 @@ function display(rateSheet) {
         if (target_buffer_rate[cur] !== undefined) {
             const listItem = document.createElement("li");
             listItem.className = "rate-item";
-            listItem.textContent = `${source} : ${cur} = ${(rate + target_buffer_rate[cur]).toFixed(digits)}`;
+            // listItem.textContent = `${source} : ${cur} = ${(rate + target_buffer_rate[cur]).toFixed(digits)}`;
+            listItem.textContent = `${source} : ${cur} = ${(rate - target_buffer_rate[cur]).toFixed(digits)} : ${(rate + target_buffer_rate[cur]).toFixed(digits)}`;
             fragment.appendChild(listItem); // 添加到文档片段
         }
     }
