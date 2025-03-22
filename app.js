@@ -3,6 +3,9 @@ const digits = 4; // 小数点保留位数
 let apikey = ""; // 动态加载的 API 密钥
 let source = ""; // 动态加载的基准货币
 let target_buffer_rate = {}; // 动态加载的缓冲汇率
+let curency_desc_dict = {} // 动态加载的货币字典
+let USD_CNY_desc = ""; // 美元兑人民币的描述
+let USD_CNY_buffer_rate = null; // 美元兑人民币的缓冲汇率
 let rate_sheet = null; // 当前汇率表数据
 let countdownTimeoutId = null; // 用于跟踪倒计时的 ID
 
@@ -73,9 +76,13 @@ function loadConfig() {
         .then((data) => {
             apikey = data.apikey; // 动态加载 API 密钥
             source = data.source; // 动态加载基准货币
-            target_buffer_rate = data.buffer_rates; // 动态加载缓冲汇率
+            target_buffer_rate = data.AUD_buffer_rates; // 动态加载缓冲汇率
+            curency_desc_dict = data.curency_desc; // 动态加载货币字典
+            USD_CNY_desc = data.USD_CNY_desc; // 美元兑人民币的描述
+            USD_CNY_buffer_rate = data.USD_CNY_buffer_rate; // 美元兑人民币的缓冲汇率
 
             console.log("Loaded target_buffer_rate:", target_buffer_rate);
+            console.log("Loaded curency_str_dict:", curency_desc_dict);
             console.log("Loaded apikey:", apikey);
             console.log("Loaded source:", source);
         })
@@ -176,22 +183,44 @@ function display(rateSheet) {
         if (target_buffer_rate[cur] !== undefined) {
             const row = document.createElement("tr");
 
-            const currencyCell = document.createElement("td");
-            currencyCell.textContent = cur;
+            if (curency_desc_dict[source] === undefined) {
+                console.error(`Error: source currency "${source}" not found in curency_str_dict`);
+                continue;
+            }
+            if (curency_desc_dict[cur] === undefined) {
+                console.error(`Error: target currency "${cur}" not found in curency_str_dict`);
+                continue;
+            }
+            const currencyDesc = document.createElement("td");
+            currencyDesc.textContent = curency_desc_dict[source] + " / " + curency_desc_dict[cur];
 
-            const lowerRateCell = document.createElement("td");
-            lowerRateCell.textContent = (rate - target_buffer_rate[cur]).toFixed(digits);
+            const buyingRateCell = document.createElement("td");
+            buyingRateCell.textContent = (rate - target_buffer_rate[cur]).toFixed(digits);
 
-            const upperRateCell = document.createElement("td");
-            upperRateCell.textContent = (rate + target_buffer_rate[cur]).toFixed(digits);
+            const sellingRateCell = document.createElement("td");
+            sellingRateCell.textContent = (rate + target_buffer_rate[cur]).toFixed(digits);
 
-            row.appendChild(currencyCell);
-            row.appendChild(lowerRateCell);
-            row.appendChild(upperRateCell);
+            row.appendChild(currencyDesc);
+            row.appendChild(buyingRateCell);
+            row.appendChild(sellingRateCell);
 
             tbody.appendChild(row);
         }
     }
+
+    // 添加USD / CNY的特殊行
+    const USD_CNY_rate = rateSheet["CNY"] / rateSheet["USD"];
+    const USD_CNY_row = document.createElement("tr");
+    const USD_CNY_currencyDesc = document.createElement("td");
+    USD_CNY_currencyDesc.textContent = USD_CNY_desc;
+    const USD_CNY_buyingRateCell = document.createElement("td");
+    USD_CNY_buyingRateCell.textContent = (USD_CNY_rate - USD_CNY_buffer_rate).toFixed(digits);
+    const USD_CNY_sellingRateCell = document.createElement("td");
+    USD_CNY_sellingRateCell.textContent = (USD_CNY_rate + USD_CNY_buffer_rate).toFixed(digits);
+    USD_CNY_row.appendChild(USD_CNY_currencyDesc);
+    USD_CNY_row.appendChild(USD_CNY_buyingRateCell);
+    USD_CNY_row.appendChild(USD_CNY_sellingRateCell);
+    tbody.appendChild(USD_CNY_row);
 
     table.appendChild(tbody);
     outputElement.appendChild(table);
