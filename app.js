@@ -2,8 +2,13 @@
 const digits = 4; // 小数点保留位数
 let apikey = ""; // 动态加载的 API 密钥
 let source = ""; // 动态加载的基准货币
-let target_buffer_rate = {}; // 动态加载的缓冲汇率
 let rate_sheet = null; // 当前汇率表数据
+let target_buffer_rate = {}; // 动态加载的缓冲汇率
+let curency_desc_dict = {} // 动态加载的货币字典
+let USD_CNY_desc = ""; // 美元兑人民币的描述
+let USD_CNY_buffer_rate = null; // 美元兑人民币的缓冲汇率
+let SPEC_AUD_CNY_desc = ""; // 澳元兑人民币的描述<特殊处理>
+let SPEC_AUD_CNY_buffer_rate = null; // 澳元兑人民币的缓冲汇率<特殊处理>
 let countdownTimeoutId = null; // 用于跟踪倒计时的 ID
 
 // 创建并添加显示下一次查询时间的容器
@@ -73,9 +78,15 @@ function loadConfig() {
         .then((data) => {
             apikey = data.apikey; // 动态加载 API 密钥
             source = data.source; // 动态加载基准货币
-            target_buffer_rate = data.buffer_rates; // 动态加载缓冲汇率
+            target_buffer_rate = data.AUD_buffer_rates; // 动态加载缓冲汇率
+            curency_desc_dict = data.curency_desc; // 动态加载货币字典
+            USD_CNY_desc = data.USD_CNY_desc; // 美元兑人民币的描述
+            USD_CNY_buffer_rate = data.USD_CNY_buffer_rate; // 美元兑人民币的缓冲汇率
+            SPEC_AUD_CNY_desc = data.SEPC_AUD_CNY_desc; // 澳元兑人民币的描述<特殊处理>
+            SPEC_AUD_CNY_buffer_rate = data.SEPC_AUD_CNY_buffer_rate; // 澳元兑人民币的缓冲汇率<特殊处理>
 
             console.log("Loaded target_buffer_rate:", target_buffer_rate);
+            console.log("Loaded curency_str_dict:", curency_desc_dict);
             console.log("Loaded apikey:", apikey);
             console.log("Loaded source:", source);
         })
@@ -140,27 +151,69 @@ function checkAndUpdateRateSheet() {
 }
 
 /**
- * 显示汇率表数据
+ * 显示特殊汇率表
  * @param {Object} rateSheet - 汇率表数据
  */
-function display(rateSheet) {
-    // 清空当前的内容
-    outputElement.innerHTML = "<h2>Exchange Rates</h2>";
+function displaySpecialRates(rateSheet) {
+    // 创建特殊汇率表格
+    const table_spec = document.createElement("table");
+    table_spec.className = "rate-table spec-rate-table";
 
-    // 创建表格元素
+    const thead_spec = document.createElement("thead");
+    const headerRow_spec = document.createElement("tr");
+
+    const currencyHeader_spec = document.createElement("th");
+    currencyHeader_spec.textContent = "汇率对";
+    const lowerRateHeader_spec = document.createElement("th");
+    lowerRateHeader_spec.textContent = "买入价";
+    const upperRateHeader_spec = document.createElement("th");
+    upperRateHeader_spec.textContent = "卖出价";
+
+    headerRow_spec.appendChild(currencyHeader_spec);
+    headerRow_spec.appendChild(lowerRateHeader_spec);
+    headerRow_spec.appendChild(upperRateHeader_spec);
+    thead_spec.appendChild(headerRow_spec);
+    table_spec.appendChild(thead_spec);
+
+    const tbody_spec = document.createElement("tbody");
+
+    // 添加澳元兑人民币的特殊行
+    if (rateSheet["CNY"] !== undefined) {
+        const SPEC_AUD_CNY_row = document.createElement("tr");
+        const SPEC_AUD_CNY_currencyDesc = document.createElement("td");
+        SPEC_AUD_CNY_currencyDesc.textContent = SPEC_AUD_CNY_desc;
+        const SPEC_AUD_CNY_buyingRateCell = document.createElement("td");
+        SPEC_AUD_CNY_buyingRateCell.textContent = (rateSheet["CNY"] - SPEC_AUD_CNY_buffer_rate).toFixed(digits);
+        const SPEC_AUD_CNY_sellingRateCell = document.createElement("td");
+        SPEC_AUD_CNY_sellingRateCell.textContent = (rateSheet["CNY"] + SPEC_AUD_CNY_buffer_rate).toFixed(digits);
+        SPEC_AUD_CNY_row.appendChild(SPEC_AUD_CNY_currencyDesc);
+        SPEC_AUD_CNY_row.appendChild(SPEC_AUD_CNY_buyingRateCell);
+        SPEC_AUD_CNY_row.appendChild(SPEC_AUD_CNY_sellingRateCell);
+        tbody_spec.appendChild(SPEC_AUD_CNY_row);
+    }
+
+    table_spec.appendChild(tbody_spec);
+    return table_spec;
+}
+
+/**
+ * 显示实时汇率表
+ * @param {Object} rateSheet - 汇率表数据
+ */
+function displayRealTimeRates(rateSheet) {
+    // 创建实时汇率表格
     const table = document.createElement("table");
-    table.className = "rate-table";
+    table.className = "rate-table regu-rate-table";
 
-    // 创建表头
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
     const currencyHeader = document.createElement("th");
-    currencyHeader.textContent = "Currency";
+    currencyHeader.textContent = "汇率对";
     const lowerRateHeader = document.createElement("th");
-    lowerRateHeader.textContent = "Buying";
+    lowerRateHeader.textContent = "买入价";
     const upperRateHeader = document.createElement("th");
-    upperRateHeader.textContent = "Selling";
+    upperRateHeader.textContent = "卖出价";
 
     headerRow.appendChild(currencyHeader);
     headerRow.appendChild(lowerRateHeader);
@@ -168,7 +221,6 @@ function display(rateSheet) {
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
-    // 创建表格主体
     const tbody = document.createElement("tbody");
 
     // 遍历汇率表数据并生成表格行
@@ -176,25 +228,68 @@ function display(rateSheet) {
         if (target_buffer_rate[cur] !== undefined) {
             const row = document.createElement("tr");
 
-            const currencyCell = document.createElement("td");
-            currencyCell.textContent = cur;
+            const currencyDesc = document.createElement("td");
+            currencyDesc.textContent = curency_desc_dict[source] + " / " + curency_desc_dict[cur];
 
-            const lowerRateCell = document.createElement("td");
-            lowerRateCell.textContent = (rate - target_buffer_rate[cur]).toFixed(digits);
+            const buyingRateCell = document.createElement("td");
+            buyingRateCell.textContent = (rate - target_buffer_rate[cur]).toFixed(digits);
 
-            const upperRateCell = document.createElement("td");
-            upperRateCell.textContent = (rate + target_buffer_rate[cur]).toFixed(digits);
+            const sellingRateCell = document.createElement("td");
+            sellingRateCell.textContent = (rate + target_buffer_rate[cur]).toFixed(digits);
 
-            row.appendChild(currencyCell);
-            row.appendChild(lowerRateCell);
-            row.appendChild(upperRateCell);
+            row.appendChild(currencyDesc);
+            row.appendChild(buyingRateCell);
+            row.appendChild(sellingRateCell);
 
             tbody.appendChild(row);
         }
     }
 
+    // 添加 USD / CNY 的特殊行
+    if (rateSheet["USD"] && rateSheet["CNY"]) {
+        const USD_CNY_rate = rateSheet["CNY"] / rateSheet["USD"];
+        const USD_CNY_row = document.createElement("tr");
+        const USD_CNY_currencyDesc = document.createElement("td");
+        USD_CNY_currencyDesc.textContent = USD_CNY_desc;
+        const USD_CNY_buyingRateCell = document.createElement("td");
+        USD_CNY_buyingRateCell.textContent = (USD_CNY_rate - USD_CNY_buffer_rate).toFixed(digits);
+        const USD_CNY_sellingRateCell = document.createElement("td");
+        USD_CNY_sellingRateCell.textContent = (USD_CNY_rate + USD_CNY_buffer_rate).toFixed(digits);
+        USD_CNY_row.appendChild(USD_CNY_currencyDesc);
+        USD_CNY_row.appendChild(USD_CNY_buyingRateCell);
+        USD_CNY_row.appendChild(USD_CNY_sellingRateCell);
+        tbody.appendChild(USD_CNY_row);
+    }
+
     table.appendChild(tbody);
-    outputElement.appendChild(table);
+    return table;
+}
+
+/**
+ * 显示各汇率表数据
+ * @param {Object} rateSheet - 汇率表数据
+ */
+function display(rateSheet) {
+    // 清空当前的内容
+    outputElement.innerHTML = "";
+
+    // 添加特殊汇率标题
+    const specialRatesHeader = document.createElement("h2");
+    specialRatesHeader.textContent = "特殊汇率";
+    outputElement.appendChild(specialRatesHeader);
+
+    // 显示特殊汇率表
+    const specialRatesTable = displaySpecialRates(rateSheet);
+    outputElement.appendChild(specialRatesTable);
+
+    // 添加实时汇率标题
+    const realTimeRatesHeader = document.createElement("h2");
+    realTimeRatesHeader.textContent = "实时汇率";
+    outputElement.appendChild(realTimeRatesHeader);
+
+    // 显示实时汇率表
+    const realTimeRatesTable = displayRealTimeRates(rateSheet);
+    outputElement.appendChild(realTimeRatesTable);
 }
 
 /**
