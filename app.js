@@ -15,18 +15,16 @@ const outputElement = document.createElement("div");
 outputElement.id = "rateSheetContainer";
 document.body.appendChild(outputElement);
 
-// 用于存储下一次查询时间
-let nextQueryTime = null;
 
 /**
- * 更新下一次查询时间并启动倒计时
+ * 更新下一次查询时间并显示倒计时
  * @param {number} intervalMs - 距离下一次查询的时间间隔（毫秒）
  */
 function updateNextQuery(intervalMs = 10 * 60 * 1000) {
     const now = new Date();
-    nextQueryTime = new Date(now.getTime() + intervalMs); // 设置下一次查询时间
+    const nextQueryTime = new Date(now.getTime() + intervalMs); // 设置下一次查询时间
 
-    // 确保容器清空
+    // 清空 nextQueryElement 的内容
     nextQueryElement.textContent = "";
 
     // 创建并添加 "Next query at" 元素
@@ -100,6 +98,7 @@ function checkAndUpdateRateSheet() {
             rate_sheet = JSON.parse(storedRateSheet); // 从 localStorage 加载数据
             console.log("Loaded rate_sheet from localStorage:", rate_sheet);
             display(rate_sheet); // 更新页面显示
+            updateNextQuery(); // 更新下一次查询时间并显示倒计时
             return; // 直接返回，不再调用 API
         }
     }
@@ -121,9 +120,7 @@ function checkAndUpdateRateSheet() {
             console.log("Updated and saved to localStorage:", rate_sheet);
 
             display(rate_sheet); // 更新页面显示
-
-            // 在成功获取数据后更新下一次查询时间
-            updateNextQuery(10 * 60 * 1000); // 设置下一次查询时间为 10 分钟后
+            updateNextQuery(); // 更新下一次查询时间并显示倒计时
         })
         .catch((error) => {
             console.error("Error fetching data:", error);
@@ -139,9 +136,6 @@ function checkAndUpdateRateSheet() {
                 errorElement.remove();
             }, 600000);
         });
-
-    // 在成功获取数据后更新下一次查询时间
-    updateNextQuery(10 * 60 * 1000); // 设置下一次查询时间为 10 分钟后
 }
 
 /**
