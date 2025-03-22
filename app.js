@@ -35,7 +35,7 @@ function updateNextQuery(intervalMs = 10 * 60 * 1000) {
         nextQueryAtElement.className = "next-query-at";
         nextQueryElement.appendChild(nextQueryAtElement);
     }
-    nextQueryAtElement.textContent = `Next query at: ${nextQueryTime.toLocaleString()}`;
+    nextQueryAtElement.textContent = `Next update at: ${nextQueryTime.toLocaleString()}`;
 
     // 更新 "Next query in"
     let nextQueryInElement = document.querySelector(".next-query-in");
@@ -52,7 +52,7 @@ function updateNextQuery(intervalMs = 10 * 60 * 1000) {
         const minutes = Math.floor(timeDiff / (1000 * 60));
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-        nextQueryInElement.textContent = `Next query in: ${minutes}m ${seconds}s`;
+        nextQueryInElement.textContent = `Next update in: ${minutes}m ${seconds}s`;
 
         if (timeDiff > 0) {
             countdownTimeoutId = setTimeout(updateCountdown, 1000);
