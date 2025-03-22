@@ -1,20 +1,7 @@
 const apikey = "88ca2fb954408f0240a369ad";
 const source = "AUD";
-const target_buffer_rate = {
-    "CNY": 1,
-    "USD": 1,
-    "HKD": 1,
-    "NZD": 1,
-    "JPY": 1,
-    "EUR": 1,
-    "CAD": 1,
-    "GBP": 1,
-    "SGD": 1,
-    "MYR": 1,
-    "TWD": 1,
-    "INR": 1
-};
 const digits = 4;
+let target_buffer_rate = {};
 let rate_sheet = null;
 
 // 创建一个显示下一次查询时间的容器
@@ -45,6 +32,24 @@ function updateNextQueryCountdown() {
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
         nextQueryElement.textContent = `Next query in: ${minutes}m ${seconds}s`;
     }
+}
+
+// 从本地 JSON 文件加载 target_buffer_rate
+function loadTargetBufferRate() {
+    fetch("target_buffer_rate.json")
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Failed to load target_buffer_rate.json");
+            }
+            return response.json();
+        })
+        .then((data) => {
+            target_buffer_rate = data;
+            console.log("Loaded target_buffer_rate:", target_buffer_rate);
+        })
+        .catch((error) => {
+            console.error("Error loading target_buffer_rate:", error);
+        });
 }
 
 // 检查并更新数据的函数
@@ -149,6 +154,9 @@ function display(rateSheet) {
     // 将表格添加到输出容器
     outputElement.appendChild(table);
 }
+
+// 初始加载 target_buffer_rate
+loadTargetBufferRate();
 
 // 初始检查并更新
 checkAndUpdateRateSheet();
