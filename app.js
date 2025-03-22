@@ -36,7 +36,7 @@ function updateNextQueryCountdown() {
 
 // 从本地 JSON 文件加载 target_buffer_rate
 function loadTargetBufferRate() {
-    fetch("target_buffer_rate.json")
+    fetch(`target_buffer_rate.json?timestamp=${new Date().getTime()}`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error("Failed to load target_buffer_rate.json");
