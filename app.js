@@ -35,9 +35,6 @@ function updateNextQuery(intervalMs = 10 * 60 * 1000) {
     nextQueryAtElement.textContent = `Next query at: ${nextQueryTime.toLocaleString()}`;
     nextQueryElement.appendChild(nextQueryAtElement);
 
-    // 添加换行符
-    nextQueryElement.appendChild(document.createElement("br"));
-
     // 创建并添加 "Next query in" 元素
     const nextQueryInElement = document.createElement("span");
     nextQueryInElement.className = "next-query-in";

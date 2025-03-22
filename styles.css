@@ -99,6 +99,28 @@ h2 {
     /* 确保在最上层 */
 }
 
+/* 样式：Next query at */
+.next-query-at {
+    color: #a79fff;
+    /* 绿色字体 */
+    font-weight: bold;
+    font-size: 1.2em;
+    display: block;
+    /* 独占一行 */
+    margin-bottom: 5px;
+    /* 与下方内容的间距 */
+}
+
+/* 样式：Next query in */
+.next-query-in {
+    color: #ffb089;
+    /* 红色字体 */
+    font-weight: bold;
+    font-size: 1.2em;
+    display: block;
+    /* 独占一行 */
+}
+
 /* 错误提示框样式 */
 .error-popup {
     position: fixed;
