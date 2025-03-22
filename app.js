@@ -1,8 +1,8 @@
 const apikey = "88ca2fb954408f0240a369ad";
 const source = "AUD";
 const target_buffer_rate = {
-    "CNY": 2,
-    "USD": 2,
+    "CNY": 1,
+    "USD": 1,
     "HKD": 1,
     "NZD": 1,
     "JPY": 1,
