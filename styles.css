@@ -12,7 +12,7 @@ body {
 h2 {
     text-align: center;
     color: #444;
-    margin-top: 120px;
+    margin-top: 60px;
 }
 
 /* 表格样式 */
@@ -78,8 +78,8 @@ h2 {
 #nextQueryContainer {
     position: fixed;
     /* 固定在页面上 */
-    top: 0px;
-    /* 固定在页面顶部 */
+    top: -78px; /* 默认收起在屏幕上方 */
+    padding-top: 20px; /* 增加触发区域 */
     left: 0;
     /* 距离页面左侧 0 */
     width: 100%;
@@ -91,12 +91,16 @@ h2 {
     background: #9efacc;
     /* 浅绿色背景 */
     padding: 10px;
-    border-radius: 0;
-    /* 去掉圆角 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     /* 添加阴影 */
     z-index: 1000;
     /* 确保在最上层 */
+    transition: top 0.3s ease-in-out; /* 平滑过渡效果 */
+}
+
+/* 鼠标悬停时展开 */
+#nextQueryContainer:hover {
+    top: 0; /* 展开到屏幕顶部 */
 }
 
 /* 样式：Next query at */
