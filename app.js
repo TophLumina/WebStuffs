@@ -200,6 +200,15 @@ function displayRealTimeRates(rateSheet) {
         }
     }
 
+    // 美元兑人民币特殊行
+    const row_USD_CNY = document.createElement("tr");
+    row_USD_CNY.innerHTML = `
+        <td>${USD_CNY_desc}</td>
+        <td>${(rateSheet["CNY"] / rateSheet["USD"] - USD_CNY_buffer_rate).toFixed(digits)}</td>
+        <td>${(rateSheet["CNY"] / rateSheet["USD"] + USD_CNY_buffer_rate).toFixed(digits)}</td>
+    `;
+    tbody.appendChild(row_USD_CNY);
+
     table.appendChild(tbody);
     return table;
 }
