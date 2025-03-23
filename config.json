@@ -2,7 +2,7 @@
     "apikey": "88ca2fb954408f0240a369ad",
     "source": "AUD",
     "SEPC_AUD_CNY_desc": "澳元 / 人民币",
-    "SEPC_AUD_CNY_buffer_rate": 0.2,
+    "SEPC_AUD_CNY_buffer_rate": 0.06,
     "USD_CNY_desc": "美元 / 人民币",
     "USD_CNY_buffer_rate": 0.2,
     "curency_desc": {
@@ -10,7 +10,7 @@
         "CNY": "人民币",
         "USD": "美金",
         "HKD": "港币",
-        "NZD": "新币",
+        "NZD": "新西兰币",
         "JPY": "日元",
         "EUR": "欧元",
         "CAD": "加元",
@@ -18,14 +18,14 @@
         "SGD": "新加坡元"
     },
     "AUD_buffer_rates": {
-        "CNY": 0.2,
-        "USD": 0.2,
-        "HKD": 0.2,
-        "NZD": 0.2,
-        "JPY": 0.2,
-        "EUR": 0.2,
-        "CAD": 0.2,
-        "GBP": 0.2,
-        "SGD": 0.2
+        "CNY": 0.08,
+        "USD": 0.02,
+        "HKD": 0.05,
+        "NZD": 0.02,
+        "JPY": 1,
+        "EUR": 0.015,
+        "CAD": 0.02,
+        "GBP": 0.01,
+        "SGD": 0.02
     }
 }

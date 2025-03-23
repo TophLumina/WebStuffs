@@ -221,7 +221,7 @@ function display(rateSheet) {
     outputElement.innerHTML = "";
 
     const specialRatesHeader = document.createElement("h2");
-    specialRatesHeader.textContent = "特殊汇率";
+    specialRatesHeader.textContent = "VIP汇率";
     outputElement.appendChild(specialRatesHeader);
     outputElement.appendChild(displaySpecialRates(rateSheet));
 
