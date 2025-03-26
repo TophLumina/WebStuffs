@@ -25,7 +25,7 @@ h2 {
     text-align: left;
     background-color: #ffffff;
     /* 白色背景 */
-    border: 2px solid #4caf50;
+    border: 2px solid #f99c33;
     /* 更鲜艳的绿色边框 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     /* 添加阴影 */
@@ -37,7 +37,7 @@ h2 {
 
 /* 表头样式 */
 .rate-table th {
-    background-color: #4caf50;
+    background-color: #f99c33;
     /* 鲜艳的绿色背景 */
     color: white;
     /* 白色文字 */
@@ -68,7 +68,7 @@ h2 {
 
 /* 表格列被选中时的样式 */
 .rate-table tr:hover {
-    border: 2px solid rgb(255, 111, 111);
+    border: 2px solid rgb(206, 102, 102);
     /* 鼠标悬浮时显示红色边框 */
     transition: border 0.2s ease-in-out;
     /* 平滑过渡效果 */
@@ -88,7 +88,7 @@ h2 {
     /* 文本居中 */
     font-size: 1.1em;
     color: #555;
-    background: #9efacc;
+    background: #FFC300;
     /* 浅绿色背景 */
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -117,7 +117,7 @@ h2 {
 
 /* 样式：Next query in */
 .next-query-in {
-    color: #ffb089;
+    color: #89e9ff;
     /* 红色字体 */
     font-weight: bold;
     font-size: 1.2em;
