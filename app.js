@@ -3,12 +3,15 @@ const digits = 4; // 小数点保留位数
 let apikey = ""; // API 密钥
 let source = ""; // 基准货币
 let rate_sheet = null; // 汇率表数据
-let target_buffer_rate = {}; // 缓冲汇率
+let buying_buffer_rate = {}; // 基准买入缓冲汇率
+let selling_buffer_rate = {}; // 基准卖出缓冲汇率
 let curency_desc_dict = {}; // 货币描述字典
 let USD_CNY_desc = ""; // 美元兑人民币描述
-let USD_CNY_buffer_rate = null; // 美元兑人民币缓冲汇率
+let USD_CNY_buying_buffer_rate = null; // 美元兑人民币买入缓冲汇率
+let USD_CNY_selling_buffer_rate = null; // 美元兑人民币卖出缓冲汇率
 let SPEC_AUD_CNY_desc = ""; // 澳元兑人民币描述
-let SPEC_AUD_CNY_buffer_rate = null; // 澳元兑人民币缓冲汇率
+let SPEC_AUD_CNY_buying_buffer_rate = null; // 澳元兑人民币买入缓冲汇率
+let SPEC_AUD_CNY_selling_buffer_rate = null; // 澳元兑人民币卖出缓冲汇率
 let countdownTimeoutId = null; // 倒计时定时器 ID
 
 // 创建显示容器
@@ -75,14 +78,17 @@ function loadConfig() {
         .then((data) => {
             apikey = data.apikey;
             source = data.source;
-            target_buffer_rate = data.AUD_buffer_rates;
+            buying_buffer_rate = data.AUD_buying_buffer_rates;
+            selling_buffer_rate = data.AUD_selling_buffer_rates;
             curency_desc_dict = data.curency_desc;
             USD_CNY_desc = data.USD_CNY_desc;
-            USD_CNY_buffer_rate = data.USD_CNY_buffer_rate;
+            USD_CNY_buying_buffer_rate = data.USD_CNY_buying_buffer_rate;
+            USD_CNY_selling_buffer_rate = data.USD_CNY_selling_buffer_rate;
             SPEC_AUD_CNY_desc = data.SEPC_AUD_CNY_desc;
-            SPEC_AUD_CNY_buffer_rate = data.SEPC_AUD_CNY_buffer_rate;
+            SPEC_AUD_CNY_buying_buffer_rate = data.SEPC_AUD_CNY_buying_buffer_rate;
+            SPEC_AUD_CNY_selling_buffer_rate = data.SEPC_AUD_CNY_selling_buffer_rate;
 
-            console.log("Config loaded:", { apikey, source, target_buffer_rate });
+            console.log("Config loaded:", { apikey, source, buying_buffer_rate, selling_buffer_rate });
         })
         .catch((error) => console.error("Error loading config:", error));
 }
@@ -156,8 +162,8 @@ function displaySpecialRates(rateSheet) {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${SPEC_AUD_CNY_desc}</td>
-            <td>${(rateSheet["CNY"] - SPEC_AUD_CNY_buffer_rate).toFixed(digits)}</td>
-            <td>${(rateSheet["CNY"] + SPEC_AUD_CNY_buffer_rate).toFixed(digits)}</td>
+            <td>${(rateSheet["CNY"] - SPEC_AUD_CNY_buying_buffer_rate).toFixed(digits)}</td>
+            <td>${(rateSheet["CNY"] + SPEC_AUD_CNY_selling_buffer_rate).toFixed(digits)}</td>
         `;
         tbody_spec.appendChild(row);
     }
@@ -189,12 +195,12 @@ function displayRealTimeRates(rateSheet) {
     const tbody = document.createElement("tbody");
 
     for (const [cur, rate] of Object.entries(rateSheet)) {
-        if (target_buffer_rate[cur] !== undefined) {
+        if (selling_buffer_rate[cur] !== undefined) {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${curency_desc_dict[source]} / ${curency_desc_dict[cur]}</td>
-                <td>${(rate - target_buffer_rate[cur]).toFixed(digits)}</td>
-                <td>${(rate + target_buffer_rate[cur]).toFixed(digits)}</td>
+                <td>${(rate - buying_buffer_rate[cur]).toFixed(digits)}</td>
+                <td>${(rate + selling_buffer_rate[cur]).toFixed(digits)}</td>
             `;
             tbody.appendChild(row);
         }
@@ -204,8 +210,8 @@ function displayRealTimeRates(rateSheet) {
     const row_USD_CNY = document.createElement("tr");
     row_USD_CNY.innerHTML = `
         <td>${USD_CNY_desc}</td>
-        <td>${(rateSheet["CNY"] / rateSheet["USD"] - USD_CNY_buffer_rate).toFixed(digits)}</td>
-        <td>${(rateSheet["CNY"] / rateSheet["USD"] + USD_CNY_buffer_rate).toFixed(digits)}</td>
+        <td>${(rateSheet["CNY"] / rateSheet["USD"] - USD_CNY_buying_buffer_rate).toFixed(digits)}</td>
+        <td>${(rateSheet["CNY"] / rateSheet["USD"] + USD_CNY_selling_buffer_rate).toFixed(digits)}</td>
     `;
     tbody.appendChild(row_USD_CNY);
 

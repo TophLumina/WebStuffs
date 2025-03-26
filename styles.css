@@ -68,7 +68,7 @@ h2 {
 
 /* 表格列被选中时的样式 */
 .rate-table tr:hover {
-    border: 2px solid rgb(255, 111, 111);
+    border: 2px solid rgb(206, 102, 102);
     /* 鼠标悬浮时显示红色边框 */
     transition: border 0.2s ease-in-out;
     /* 平滑过渡效果 */
@@ -117,7 +117,7 @@ h2 {
 
 /* 样式：Next query in */
 .next-query-in {
-    color: #ffb089;
+    color: #89e9ff;
     /* 红色字体 */
     font-weight: bold;
     font-size: 1.2em;
