@@ -275,7 +275,7 @@ function display(rateSheet) {
 
     // 添加特殊汇率标题
     const specialRatesHeader = document.createElement("h2");
-    specialRatesHeader.textContent = "特殊汇率";
+    specialRatesHeader.textContent = "VIP汇率";
     outputElement.appendChild(specialRatesHeader);
 
     // 显示特殊汇率表
