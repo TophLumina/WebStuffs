@@ -14,11 +14,6 @@ let SPEC_AUD_CNY_buying_buffer_rate = null; // 澳元兑人民币买入缓冲汇
 let SPEC_AUD_CNY_selling_buffer_rate = null; // 澳元兑人民币卖出缓冲汇率
 let countdownTimeoutId = null; // 倒计时定时器 ID
 
-// 创建显示容器
-const nextQueryElement = document.createElement("div"); // 下一次查询时间容器
-nextQueryElement.id = "nextQueryContainer";
-document.body.appendChild(nextQueryElement);
-
 const outputElement = document.createElement("div"); // 汇率表容器
 outputElement.id = "rateSheetContainer";
 document.body.appendChild(outputElement);
