@@ -200,6 +200,6 @@ function scheduleNextCheck() {
 // 初始化
 loadConfig().then(() => {
     checkAndUpdateRateSheet();
-    scheduleNextCheck();
+    setTimeout(scheduleNextCheck, 10 * 60 * 1000);
 });
 
