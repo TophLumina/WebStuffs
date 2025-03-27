@@ -24,48 +24,6 @@ outputElement.id = "rateSheetContainer";
 document.body.appendChild(outputElement);
 
 /**
- * 更新下一次查询时间并显示倒计时
- * @param {number} intervalMs - 距离下一次查询的时间间隔（毫秒）
- */
-function updateNextQuery(intervalMs = 10 * 60 * 1000) {
-    const now = new Date();
-    const nextQueryTime = new Date(now.getTime() + intervalMs);
-
-    // 更新 "Next query at"
-    let nextQueryAtElement = document.querySelector(".next-query-at");
-    if (!nextQueryAtElement) {
-        nextQueryAtElement = document.createElement("span");
-        nextQueryAtElement.className = "next-query-at";
-        nextQueryElement.appendChild(nextQueryAtElement);
-    }
-    nextQueryAtElement.textContent = `Next update at: ${nextQueryTime.toLocaleString()}`;
-
-    // 更新 "Next query in"
-    let nextQueryInElement = document.querySelector(".next-query-in");
-    if (!nextQueryInElement) {
-        nextQueryInElement = document.createElement("span");
-        nextQueryInElement.className = "next-query-in";
-        nextQueryElement.appendChild(nextQueryInElement);
-    }
-
-    // 倒计时更新
-    function updateCountdown() {
-        const now = new Date();
-        const timeDiff = Math.max(0, nextQueryTime - now);
-        const minutes = Math.floor(timeDiff / (1000 * 60));
-        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
-        nextQueryInElement.textContent = `Next update in: ${minutes}m ${seconds}s`;
-
-        if (timeDiff > 0) {
-            countdownTimeoutId = setTimeout(updateCountdown, 1000);
-        }
-    }
-
-    updateCountdown();
-}
-
-/**
  * 加载配置文件
  * @returns {Promise<void>}
  */
@@ -107,7 +65,6 @@ function checkAndUpdateRateSheet() {
             rate_sheet = JSON.parse(storedRateSheet);
             console.log("Loaded rate_sheet from localStorage:", rate_sheet);
             display(rate_sheet);
-            updateNextQuery();
             return;
         }
     }
@@ -124,7 +81,6 @@ function checkAndUpdateRateSheet() {
             localStorage.setItem("rate_sheet_last_updated", Date.now().toString());
             console.log("Updated rate_sheet:", rate_sheet);
             display(rate_sheet);
-            updateNextQuery();
         })
         .catch((error) => {
             console.error("Error fetching data:", error);
@@ -241,9 +197,9 @@ function display(rateSheet) {
  * 定时检查并更新汇率表数据
  */
 function scheduleNextCheck() {
-    checkAndUpdateRateSheet().then(() => {
+    checkAndUpdateRateSheet();
         setTimeout(scheduleNextCheck, 10 * 60 * 1000);
-    });
+        console.log("Perfroming Scheduled Check");
 }
 
 // 初始化
