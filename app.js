@@ -178,12 +178,12 @@ function display(rateSheet) {
     outputElement.innerHTML = "";
 
     const specialRatesHeader = document.createElement("h2");
-    specialRatesHeader.textContent = "VIP汇率 VIP Exchange Rate";
+    specialRatesHeader.textContent = "VIP汇率 VIP Rate";
     outputElement.appendChild(specialRatesHeader);
     outputElement.appendChild(displaySpecialRates(rateSheet));
 
     const realTimeRatesHeader = document.createElement("h2");
-    realTimeRatesHeader.textContent = "实时汇率 Live Exchange Rate";
+    realTimeRatesHeader.textContent = "实时汇率 Live Rate";
     outputElement.appendChild(realTimeRatesHeader);
     outputElement.appendChild(displayRealTimeRates(rateSheet));
 }
