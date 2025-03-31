@@ -98,7 +98,7 @@ function displaySpecialRates(rateSheet) {
     const thead_spec = document.createElement("thead");
     const headerRow_spec = document.createElement("tr");
 
-    ["汇率对", "买入价", "卖出价"].forEach((text) => {
+    ["汇率对 Exchange Pairs", "买入价 Buy Price", "卖出价 Sell Price"].forEach((text) => {
         const th = document.createElement("th");
         th.textContent = text;
         headerRow_spec.appendChild(th);
@@ -134,7 +134,7 @@ function displayRealTimeRates(rateSheet) {
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
-    ["汇率对", "买入价", "卖出价"].forEach((text) => {
+    ["汇率对 Exchange Pairs", "买入价 Buy Price", "卖出价 Sell Price"].forEach((text) => {
         const th = document.createElement("th");
         th.textContent = text;
         headerRow.appendChild(th);
@@ -178,12 +178,12 @@ function display(rateSheet) {
     outputElement.innerHTML = "";
 
     const specialRatesHeader = document.createElement("h2");
-    specialRatesHeader.textContent = "VIP汇率";
+    specialRatesHeader.textContent = "VIP汇率 VIP Exchange Rate";
     outputElement.appendChild(specialRatesHeader);
     outputElement.appendChild(displaySpecialRates(rateSheet));
 
     const realTimeRatesHeader = document.createElement("h2");
-    realTimeRatesHeader.textContent = "实时汇率";
+    realTimeRatesHeader.textContent = "实时汇率 Live Exchange Rate";
     outputElement.appendChild(realTimeRatesHeader);
     outputElement.appendChild(displayRealTimeRates(rateSheet));
 }
