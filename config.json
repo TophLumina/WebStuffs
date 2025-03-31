@@ -3,7 +3,7 @@
     "source": "AUD",
     "SEPC_AUD_CNY_desc": "AUD / RMB",
     "SEPC_AUD_CNY_buying_buffer_rate": 0.00,
-    "SEPC_AUD_CNY_selling_buffer_rate": 0.14,
+    "SEPC_AUD_CNY_selling_buffer_rate": 0.1618,
     "USD_CNY_desc": "USD / RMB",
     "USD_CNY_buying_buffer_rate": 0.03976,
     "USD_CNY_selling_buffer_rate": 0.267311,
@@ -31,7 +31,7 @@
         "SGD": 0.02128
     },
     "AUD_selling_buffer_rates": {
-        "CNY": 0.15,
+        "CNY": 0.1718,
         "USD": 0.01079,
         "HKD": 0.1333,
         "NZD": 0.02083,
