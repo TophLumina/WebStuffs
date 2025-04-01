@@ -134,7 +134,7 @@ function displayRealTimeRates(rateSheet) {
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
-    ["汇率对 Exchange Pairs", "买入价 Buy Price", "卖出价 Sell Price"].forEach((text) => {
+    ["汇率对 Currency Pairs", "买入价 We Buy", "卖出价 We Sell"].forEach((text) => {
         const th = document.createElement("th");
         th.textContent = text;
         headerRow.appendChild(th);
