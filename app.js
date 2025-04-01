@@ -98,7 +98,7 @@ function displaySpecialRates(rateSheet) {
     const thead_spec = document.createElement("thead");
     const headerRow_spec = document.createElement("tr");
 
-    ["汇率对 Exchange Pairs", "买入价 Buy Price", "卖出价 Sell Price"].forEach((text) => {
+    ["汇率对 Currency Pairs", "买入价 We Buy", "卖出价 We Sell"].forEach((text) => {
         const th = document.createElement("th");
         th.textContent = text;
         headerRow_spec.appendChild(th);
