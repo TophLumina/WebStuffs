@@ -2,8 +2,8 @@
     "apikey": "88ca2fb954408f0240a369ad",
     "source": "AUD",
     "SEPC_AUD_CNY_desc": "AUD / RMB",
-    "SEPC_AUD_CNY_buying_buffer_rate": 0.07,
-    "SEPC_AUD_CNY_selling_buffer_rate": 0.0818,
+    "SEPC_AUD_CNY_buying_buffer_rate": 0.05,
+    "SEPC_AUD_CNY_selling_buffer_rate": 0.1018,
     "USD_CNY_desc": "USD / RMB",
     "USD_CNY_buying_buffer_rate": 0.03976,
     "USD_CNY_selling_buffer_rate": 0.267311,
@@ -20,7 +20,7 @@
         "SGD": "SGD"
     },
     "AUD_buying_buffer_rates": {
-        "CNY": 0.11,
+        "CNY": 0.09,
         "USD": 0.0091,
         "HKD": 0.1113,
         "NZD": 0.051,
@@ -31,7 +31,7 @@
         "SGD": 0.02128
     },
     "AUD_selling_buffer_rates": {
-        "CNY": 0.1018,
+        "CNY": 0.1218,
         "USD": 0.01079,
         "HKD": 0.1333,
         "NZD": 0.02083,
